@@ -1,0 +1,27 @@
+
+# Android Studio
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+**/build/
+.kotlin/
+
+# Configuración local
+local.properties
+
+# Archivos generados
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# Archivos del sistema
+.DS_Store
+
+# Claves y configuraciones de firma
+*.jks
+*.keystore
+keystore.properties
