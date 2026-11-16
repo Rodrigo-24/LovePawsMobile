@@ -63,4 +63,8 @@ object RetrofitInstance {
     val solicitudApi: SolicitudApi by lazy {
         retrofit.create(SolicitudApi::class.java)
     }
+
+    val perfilApi: PerfilApi by lazy {
+        retrofit.create(PerfilApi::class.java)
+    }
 }

@@ -26,7 +26,8 @@ import com.lovepaws.mobile.viewmodel.MascotaViewModel
 fun CatalogoScreen(
     mascotaViewModel: MascotaViewModel,
     onMascotaClick: (Long) -> Unit,
-    onMisAdopcionesClick: () -> Unit
+    onMisAdopcionesClick: () -> Unit,
+    onMiPerfilClick: () -> Unit
 ) {
 
     val mascotas by mascotaViewModel.mascotas.collectAsState()
@@ -52,15 +53,32 @@ fun CatalogoScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Text(
-                text = "Mascotas disponibles",
-                style = MaterialTheme.typography.headlineMedium
-            )
-
-            TextButton(
-                onClick = onMisAdopcionesClick
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Mis adopciones")
+
+                Text(
+                    text = "Mascotas disponibles",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+
+                    TextButton(
+                        onClick = onMisAdopcionesClick
+                    ) {
+                        Text("Mis adopciones")
+                    }
+
+                    TextButton(
+                        onClick = onMiPerfilClick
+                    ) {
+                        Text("Mi perfil")
+                    }
+                }
             }
         }
 

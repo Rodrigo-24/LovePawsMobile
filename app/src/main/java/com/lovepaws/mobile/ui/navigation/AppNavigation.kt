@@ -14,11 +14,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import com.lovepaws.mobile.ui.screen.DetalleSolicitudScreen
+import com.lovepaws.mobile.ui.screens.CambiarPasswordScreen
 
 import com.lovepaws.mobile.ui.screens.LoginScreen
 import com.lovepaws.mobile.ui.screens.CatalogoScreen
 import com.lovepaws.mobile.ui.screens.DetalleMascotaScreen
+import com.lovepaws.mobile.ui.screens.EditarCredencialesScreen
 import com.lovepaws.mobile.ui.screens.MisAdopcionesScreen
+import com.lovepaws.mobile.ui.screens.PerfilScreen
 import com.lovepaws.mobile.ui.screens.RegistroAdoptanteScreen
 import com.lovepaws.mobile.ui.screens.SolicitudAdopcionScreen
 import com.lovepaws.mobile.viewmodel.AuthViewModel
@@ -26,6 +29,7 @@ import com.lovepaws.mobile.viewmodel.AuthViewModelFactory
 import com.lovepaws.mobile.viewmodel.DetalleMascotaViewModel
 import com.lovepaws.mobile.viewmodel.MascotaViewModel
 import com.lovepaws.mobile.viewmodel.MisAdopcionesViewModel
+import com.lovepaws.mobile.viewmodel.PerfilViewModel
 import com.lovepaws.mobile.viewmodel.RegistroAdoptanteViewModel
 import com.lovepaws.mobile.viewmodel.SolicitudViewModel
 
@@ -98,29 +102,53 @@ fun AppNavigation() {
             val cargandoSolicitudes by mascotaViewModel.cargandoSolicitudes.collectAsState()
             val misAdopcionesViewModel: MisAdopcionesViewModel = viewModel()
 
+            val perfilViewModel: PerfilViewModel = viewModel()
+
             var mascotaSeleccionada by remember { mutableStateOf<Long?>(null) }
             var mostrarSolicitud by remember { mutableStateOf(false) }
             var mostrarMisAdopciones by remember { mutableStateOf(false) }
             var solicitudSeleccionada by remember { mutableStateOf<Long?>(null) }
+            var mostrarPerfil by remember { mutableStateOf(false) }
+            var mostrarEditarCredenciales by remember { mutableStateOf(false) }
+            var mostrarCambiarPassword by remember { mutableStateOf(false) }
 
             BackHandler(
                 enabled = solicitudSeleccionada != null ||
                         mostrarSolicitud ||
                         mostrarMisAdopciones ||
+                        mostrarEditarCredenciales ||
+                        mostrarCambiarPassword ||
+                        mostrarPerfil ||
                         mascotaSeleccionada != null
             ) {
                 when {
-                    solicitudSeleccionada != null -> solicitudSeleccionada = null
-                    mostrarSolicitud -> mostrarSolicitud = false
-                    mostrarMisAdopciones -> mostrarMisAdopciones = false
-                    else -> mascotaSeleccionada = null
+                    solicitudSeleccionada != null ->
+                        solicitudSeleccionada = null
+
+                    mostrarSolicitud ->
+                        mostrarSolicitud = false
+
+                    mostrarMisAdopciones ->
+                        mostrarMisAdopciones = false
+
+                    mostrarEditarCredenciales ->
+                        mostrarEditarCredenciales = false
+
+                    mostrarCambiarPassword ->
+                        mostrarCambiarPassword = false
+
+                    mostrarPerfil ->
+                        mostrarPerfil = false
+
+                    else ->
+                        mascotaSeleccionada = null
                 }
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
 
                 // El catálogo se dibuja una sola vez.
-                CatalogoScreen(
+                CatalogoScreen (
                     mascotaViewModel = mascotaViewModel,
                     onMascotaClick = { idMascota ->
                         mascotaSeleccionada = idMascota
@@ -128,6 +156,9 @@ fun AppNavigation() {
                     },
                     onMisAdopcionesClick = {
                         mostrarMisAdopciones = true
+                    },
+                    onMiPerfilClick = {
+                        mostrarPerfil = true
                     }
                 )
 
@@ -148,8 +179,65 @@ fun AppNavigation() {
                             mostrarMisAdopciones = false
                         }
                     )
-                } else {
+                } else if (mostrarEditarCredenciales) {
+                    EditarCredencialesScreen (
+                        perfilViewModel = perfilViewModel,
+                        onBack = {
+                            mostrarEditarCredenciales = false
+                        },
+                        onCerrarSesion = {
+                            authViewModel.cerrarSesion {
+                                navController.navigate("login") {
+                                    popUpTo("catalogo") {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
+                                }
+                            }
+                        }
+                    )
+                    } else if (mostrarCambiarPassword) {
+                    CambiarPasswordScreen (
+                        perfilViewModel = perfilViewModel,
+                        onBack = {
+                            mostrarCambiarPassword = false
+                        },
+                        onCerrarSesion = {
+                            authViewModel.cerrarSesion {
+                                navController.navigate("login") {
+                                    popUpTo("catalogo") {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
+                                }
+                            }
+                        }
+                    )
+                    } else if (mostrarPerfil) {
 
+                        PerfilScreen(
+                            perfilViewModel = perfilViewModel,
+                            onBack = {
+                                mostrarPerfil = false
+                            },
+                            onEditarCredenciales = {
+                                mostrarEditarCredenciales = true
+                            },
+                            onCambiarPassword = {
+                                mostrarCambiarPassword = true
+                            },
+                            onCerrarSesion = {
+                                authViewModel.cerrarSesion {
+                                    navController.navigate("login") {
+                                        popUpTo("catalogo") {
+                                            inclusive = true
+                                        }
+                                        launchSingleTop = true
+                                    }
+                                }
+                            }
+                        )
+                    } else {
                     mascotaSeleccionada?.let { idMascota ->
 
                         DetalleMascotaScreen(

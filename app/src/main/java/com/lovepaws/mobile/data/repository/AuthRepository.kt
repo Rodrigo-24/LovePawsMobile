@@ -34,6 +34,10 @@ class AuthRepository (
         return authApi.registrarAdoptante(request)
     }
 
+    suspend fun cerrarSesion() {
+        tokenStorage.clearToken()
+    }
+
     fun observeTokenStored(): Flow<Boolean> {
         return tokenStorage.accessToken.map { token ->
             !token.isNullOrBlank()

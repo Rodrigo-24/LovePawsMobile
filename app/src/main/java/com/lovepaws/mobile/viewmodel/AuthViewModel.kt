@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 
 class AuthViewModel(
     private val authRepository: AuthRepository
@@ -19,6 +20,9 @@ class AuthViewModel(
 
     val loginExitoso: StateFlow<Boolean> =
         _loginExitoso.asStateFlow()
+
+    private val _cerrandoSesion = MutableStateFlow(false)
+    val cerrandoSesion: StateFlow<Boolean> = _cerrandoSesion.asStateFlow()
 
     private val _tokenStored = MutableStateFlow(false)
     val tokenStored: StateFlow<Boolean> = _tokenStored.asStateFlow()
@@ -47,6 +51,32 @@ class AuthViewModel(
 
             } catch (e: Exception) {
                 _mensaje.value = "Error de conexión: ${e.message}"
+            }
+        }
+    }
+
+    fun cerrarSesion(onSesionCerrada: () -> Unit) {
+
+        if (_cerrandoSesion.value) return
+        viewModelScope.launch {
+            _cerrandoSesion.value = true
+
+            try {
+                authRepository.cerrarSesion()
+
+                _loginExitoso.value = false
+                _mensaje.value = "Sin iniciar sesión"
+
+                onSesionCerrada()
+
+            } catch (e: CancellationException) {
+                throw e
+
+            } catch (e: Exception) {
+                _mensaje.value = "No se pudo cerrar sesión: ${e.message}"
+
+            } finally {
+                _cerrandoSesion.value = false
             }
         }
     }
