@@ -37,7 +37,10 @@ import com.lovepaws.mobile.viewmodel.DetalleMascotaViewModel
 fun DetalleMascotaScreen(
     idMascota: Long,
     detalleMascotaViewModel: DetalleMascotaViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onSolicitar: () -> Unit,
+    solicitudPendiente: Boolean,
+    verificandoSolicitud: Boolean
 ) {
 
     val mascota by detalleMascotaViewModel.mascota.collectAsState()
@@ -209,13 +212,9 @@ fun DetalleMascotaScreen(
                 ) {
 
                     val alturaDisponible = this.maxHeight
-
                     val fotoHeight = alturaDisponible * 0.55f
-
                     val superposicion = 32.dp
-
                     val cardTop = fotoHeight - superposicion
-
                     val cardHeight = alturaDisponible - cardTop
 
                     // FOTO
@@ -411,6 +410,22 @@ fun DetalleMascotaScreen(
                             )
 
                             Spacer(modifier = Modifier.height(24.dp))
+
+                            Button(
+                                onClick = onSolicitar,
+                                enabled = !solicitudPendiente && !verificandoSolicitud,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                            ) {
+                                Text(
+                                    text = when {
+                                        verificandoSolicitud -> "Verificando solicitud..."
+                                        solicitudPendiente -> "Solicitud pendiente"
+                                        else -> "Solicitar adopción"
+                                    }
+                                )
+                            }
                         }
                     }
                 }

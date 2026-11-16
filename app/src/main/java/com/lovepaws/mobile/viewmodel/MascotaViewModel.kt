@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lovepaws.mobile.data.dto.MascotaResponse
 import com.lovepaws.mobile.data.repository.MascotaRepository
+import com.lovepaws.mobile.data.repository.SolicitudRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MascotaViewModel(
-    private val mascotaRepository: MascotaRepository = MascotaRepository()
+    private val mascotaRepository: MascotaRepository = MascotaRepository(),
+    private val solicitudRepository: SolicitudRepository = SolicitudRepository()
 ) : ViewModel() {
 
     private val _mascotas =
@@ -29,6 +31,21 @@ class MascotaViewModel(
 
     val cargando: StateFlow<Boolean> =
         _cargando.asStateFlow()
+
+    // IDs de mascotas con solicitudes pendientes del adoptante actual
+    private val _mascotasConSolicitudPendiente =
+        MutableStateFlow<Set<Long>>(emptySet())
+
+    val mascotasConSolicitudPendiente: StateFlow<Set<Long>> =
+        _mascotasConSolicitudPendiente.asStateFlow()
+
+    // Estado de carga de las solicitudes
+    private val _cargandoSolicitudes = MutableStateFlow(false)
+
+    val cargandoSolicitudes: StateFlow<Boolean> =
+        _cargandoSolicitudes.asStateFlow()
+
+    private var solicitudesCargadas = false
 
     private var catalogoCargado = false
 
@@ -79,6 +96,52 @@ class MascotaViewModel(
             } finally {
 
                 _cargando.value = false
+            }
+        }
+    }
+
+    fun cargarSolicitudesPendientes(forzar: Boolean = false) {
+
+        // Evitar consultas innecesarias
+        if (solicitudesCargadas && !forzar) {
+            return
+        }
+
+        // Evitar consultas simultáneas
+        if (_cargandoSolicitudes.value) {
+            return
+        }
+
+        viewModelScope.launch {
+
+            _cargandoSolicitudes.value = true
+
+            try {
+
+                val response = solicitudRepository.obtenerSolicitudes()
+
+                if (response.isSuccessful) {
+
+                    val solicitudes = response.body().orEmpty()
+
+                    // Conservar únicamente las solicitudes pendientes
+                    _mascotasConSolicitudPendiente.value =
+                        solicitudes
+                            .filter { it.estado == "PENDIENTE" }
+                            .map { it.idMascota }
+                            .toSet()
+
+                    solicitudesCargadas = true
+                }
+
+            } catch (e: Exception) {
+
+                // Si falla la consulta, conservamos el estado anterior.
+                e.printStackTrace()
+
+            } finally {
+
+                _cargandoSolicitudes.value = false
             }
         }
     }

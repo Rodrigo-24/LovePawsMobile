@@ -1,12 +1,14 @@
 package com.lovepaws.mobile.data.repository
 
 import com.lovepaws.mobile.data.dto.LoginRequest
+import com.lovepaws.mobile.data.dto.RegistroAdoptanteRequest
 import com.lovepaws.mobile.data.dto.TokenResponse
 import com.lovepaws.mobile.data.local.TokenStorage
 import com.lovepaws.mobile.data.remote.AuthApi
 import com.lovepaws.mobile.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonElement
 import retrofit2.Response
 
 class AuthRepository (
@@ -26,6 +28,10 @@ class AuthRepository (
         }
 
         return response
+    }
+
+    suspend fun registrarAdoptante(request: RegistroAdoptanteRequest): Response<JsonElement> {
+        return authApi.registrarAdoptante(request)
     }
 
     fun observeTokenStored(): Flow<Boolean> {

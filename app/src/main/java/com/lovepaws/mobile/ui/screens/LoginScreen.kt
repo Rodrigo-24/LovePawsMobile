@@ -12,20 +12,16 @@ import com.lovepaws.mobile.viewmodel.AuthViewModel
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onCrearCuenta: () -> Unit
 ) {
 
     val mensaje by authViewModel.mensaje.collectAsState()
     val loginExitoso by authViewModel.loginExitoso.collectAsState()
 
-    var username by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
-    // Detectar cuando el inicio de sesión sea exitoso
     LaunchedEffect(loginExitoso) {
         if (loginExitoso) {
             onLoginSuccess()
@@ -79,5 +75,13 @@ fun LoginScreen(
             text = mensaje,
             modifier = Modifier.padding(top = 16.dp)
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextButton(
+            onClick = onCrearCuenta
+        ) {
+            Text("¿No tienes cuenta? Crear cuenta")
+        }
     }
 }

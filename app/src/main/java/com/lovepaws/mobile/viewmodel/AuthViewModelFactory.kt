@@ -14,18 +14,22 @@ class AuthViewModelFactory(
         modelClass: Class<T>
     ): T {
 
+        val tokenStorage = TokenStorage(
+            context.applicationContext
+        )
+
+        val authRepository = AuthRepository(
+            tokenStorage = tokenStorage
+        )
+
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-
-            val tokenStorage = TokenStorage(
-                context.applicationContext
-            )
-
-            val authRepository = AuthRepository(
-                tokenStorage = tokenStorage
-            )
-
             @Suppress("UNCHECKED_CAST")
             return AuthViewModel(authRepository) as T
+        }
+
+        if (modelClass.isAssignableFrom(RegistroAdoptanteViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return RegistroAdoptanteViewModel(authRepository) as T
         }
 
         throw IllegalArgumentException(

@@ -13,14 +13,21 @@ import androidx.navigation.compose.rememberNavController
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import com.lovepaws.mobile.ui.screen.DetalleSolicitudScreen
 
 import com.lovepaws.mobile.ui.screens.LoginScreen
 import com.lovepaws.mobile.ui.screens.CatalogoScreen
 import com.lovepaws.mobile.ui.screens.DetalleMascotaScreen
+import com.lovepaws.mobile.ui.screens.MisAdopcionesScreen
+import com.lovepaws.mobile.ui.screens.RegistroAdoptanteScreen
+import com.lovepaws.mobile.ui.screens.SolicitudAdopcionScreen
 import com.lovepaws.mobile.viewmodel.AuthViewModel
 import com.lovepaws.mobile.viewmodel.AuthViewModelFactory
 import com.lovepaws.mobile.viewmodel.DetalleMascotaViewModel
 import com.lovepaws.mobile.viewmodel.MascotaViewModel
+import com.lovepaws.mobile.viewmodel.MisAdopcionesViewModel
+import com.lovepaws.mobile.viewmodel.RegistroAdoptanteViewModel
+import com.lovepaws.mobile.viewmodel.SolicitudViewModel
 
 @Composable
 fun AppNavigation() {
@@ -52,6 +59,31 @@ fun AppNavigation() {
                         }
                         launchSingleTop = true
                     }
+                },
+                onCrearCuenta = {
+                    navController.navigate("registro")
+                }
+            )
+        }
+
+        composable("registro") {
+
+            val registroViewModel: RegistroAdoptanteViewModel = viewModel(
+                factory = AuthViewModelFactory(context.applicationContext)
+            )
+
+            RegistroAdoptanteScreen(
+                registroViewModel = registroViewModel,
+                onRegistroExitoso = {
+                    navController.navigate("login") {
+                        popUpTo("registro") {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                onVolverLogin = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -60,14 +92,29 @@ fun AppNavigation() {
 
             val mascotaViewModel: MascotaViewModel = viewModel()
             val detalleViewModel: DetalleMascotaViewModel = viewModel()
+            val solicitudViewModel: SolicitudViewModel = viewModel()
 
-            var mascotaSeleccionada by remember {
-                mutableStateOf<Long?>(null)
-            }
+            val mascotasConSolicitudPendiente by mascotaViewModel.mascotasConSolicitudPendiente.collectAsState()
+            val cargandoSolicitudes by mascotaViewModel.cargandoSolicitudes.collectAsState()
+            val misAdopcionesViewModel: MisAdopcionesViewModel = viewModel()
 
-            // El botón físico de volver cierra el detalle.
-            BackHandler(enabled = mascotaSeleccionada != null) {
-                mascotaSeleccionada = null
+            var mascotaSeleccionada by remember { mutableStateOf<Long?>(null) }
+            var mostrarSolicitud by remember { mutableStateOf(false) }
+            var mostrarMisAdopciones by remember { mutableStateOf(false) }
+            var solicitudSeleccionada by remember { mutableStateOf<Long?>(null) }
+
+            BackHandler(
+                enabled = solicitudSeleccionada != null ||
+                        mostrarSolicitud ||
+                        mostrarMisAdopciones ||
+                        mascotaSeleccionada != null
+            ) {
+                when {
+                    solicitudSeleccionada != null -> solicitudSeleccionada = null
+                    mostrarSolicitud -> mostrarSolicitud = false
+                    mostrarMisAdopciones -> mostrarMisAdopciones = false
+                    else -> mascotaSeleccionada = null
+                }
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -77,19 +124,58 @@ fun AppNavigation() {
                     mascotaViewModel = mascotaViewModel,
                     onMascotaClick = { idMascota ->
                         mascotaSeleccionada = idMascota
+                        mostrarSolicitud = false
+                    },
+                    onMisAdopcionesClick = {
+                        mostrarMisAdopciones = true
                     }
                 )
 
-                // El detalle aparece encima del catálogo.
-                mascotaSeleccionada?.let { idMascota ->
-
-                    DetalleMascotaScreen(
-                        idMascota = idMascota,
-                        detalleMascotaViewModel = detalleViewModel,
+                if (solicitudSeleccionada != null) {
+                    DetalleSolicitudScreen (
+                        idSolicitud = solicitudSeleccionada!!,
                         onBack = {
-                            mascotaSeleccionada = null
+                            solicitudSeleccionada = null
                         }
                     )
+                } else if (mostrarMisAdopciones) {
+                    MisAdopcionesScreen(
+                        viewModel = misAdopcionesViewModel,
+                        onSolicitudClick = { idSolicitud ->
+                            solicitudSeleccionada = idSolicitud
+                        },
+                        onBack = {
+                            mostrarMisAdopciones = false
+                        }
+                    )
+                } else {
+
+                    mascotaSeleccionada?.let { idMascota ->
+
+                        DetalleMascotaScreen(
+                            idMascota = idMascota,
+                            detalleMascotaViewModel = detalleViewModel,
+                            onBack = {
+                                mascotaSeleccionada = null
+                            },
+                            onSolicitar = {
+                                mostrarSolicitud = true
+                            },
+                            solicitudPendiente = idMascota in mascotasConSolicitudPendiente,
+                            verificandoSolicitud = cargandoSolicitudes
+                        )
+
+                        if (mostrarSolicitud) {
+
+                            SolicitudAdopcionScreen (
+                                idMascota = idMascota,
+                                solicitudViewModel = solicitudViewModel,
+                                onBack = {
+                                    mostrarSolicitud = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }

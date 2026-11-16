@@ -59,4 +59,8 @@ object RetrofitInstance {
     val mascotaApi: MascotaApi by lazy {
         retrofit.create(MascotaApi::class.java)
     }
+
+    val solicitudApi: SolicitudApi by lazy {
+        retrofit.create(SolicitudApi::class.java)
+    }
 }

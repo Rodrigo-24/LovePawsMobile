@@ -25,15 +25,19 @@ import com.lovepaws.mobile.viewmodel.MascotaViewModel
 @Composable
 fun CatalogoScreen(
     mascotaViewModel: MascotaViewModel,
-    onMascotaClick: (Long) -> Unit
+    onMascotaClick: (Long) -> Unit,
+    onMisAdopcionesClick: () -> Unit
 ) {
 
     val mascotas by mascotaViewModel.mascotas.collectAsState()
     val mensaje by mascotaViewModel.mensaje.collectAsState()
     val cargando by mascotaViewModel.cargando.collectAsState()
+    val mascotasConSolicitudPendiente by mascotaViewModel.mascotasConSolicitudPendiente.collectAsState()
+    val cargandoSolicitudes by mascotaViewModel.cargandoSolicitudes.collectAsState()
 
     LaunchedEffect(Unit) {
         mascotaViewModel.cargarMascotas()
+        mascotaViewModel.cargarSolicitudesPendientes()
     }
 
     Column(
@@ -42,17 +46,31 @@ fun CatalogoScreen(
             .padding(16.dp)
     ) {
 
-        Text(
-            text = "Mascotas disponibles",
-            style = MaterialTheme.typography.headlineMedium
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(
+                text = "Mascotas disponibles",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            TextButton(
+                onClick = onMisAdopcionesClick
+            ) {
+                Text("Mis adopciones")
+            }
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         PullToRefreshBox(
-            isRefreshing = cargando,
+            isRefreshing = cargando || cargandoSolicitudes,
             onRefresh = {
                 mascotaViewModel.cargarMascotas(forzar = true)
+                mascotaViewModel.cargarSolicitudesPendientes(forzar = true)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,6 +129,9 @@ fun CatalogoScreen(
                             ?.replaceFirstChar { it.uppercase() }
                             ?: "Sexo no especificado"
 
+                        val tieneSolicitudPendiente =
+                            mascota.idMascota in mascotasConSolicitudPendiente
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -125,33 +146,62 @@ fun CatalogoScreen(
                             ) {
 
                                 // Fotografía: 80%
-                                if (!mascota.fotoUrl.isNullOrBlank()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(0.8f)
+                                ) {
 
-                                    AsyncImage(
-                                        model = RetrofitInstance.BASE_URL.trimEnd('/') +
-                                                "/" + mascota.fotoUrl.trimStart('/'),
+                                    if (!mascota.fotoUrl.isNullOrBlank()) {
 
-                                        contentDescription = "Fotografía de ${mascota.nombre}",
+                                        AsyncImage(
+                                            model = RetrofitInstance.BASE_URL.trimEnd('/') +
+                                                    "/" + mascota.fotoUrl.trimStart('/'),
 
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .weight(0.8f),
+                                            contentDescription = "Fotografía de ${mascota.nombre}",
 
-                                        contentScale = ContentScale.Crop
-                                    )
+                                            modifier = Modifier.fillMaxSize(),
 
-                                } else {
+                                            contentScale = ContentScale.Crop
+                                        )
 
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .weight(0.8f)
-                                            .background(
-                                                MaterialTheme.colorScheme.surfaceVariant
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text("Sin fotografía")
+                                    } else {
+
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(
+                                                    MaterialTheme.colorScheme.surfaceVariant
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text("Sin fotografía")
+                                        }
+                                    }
+
+                                    // Etiqueta de solicitud pendiente
+                                    if (tieneSolicitudPendiente) {
+
+                                        Surface(
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .padding(8.dp),
+
+                                            shape = MaterialTheme.shapes.small,
+
+                                            color = MaterialTheme.colorScheme.tertiaryContainer
+                                        ) {
+
+                                            Text(
+                                                text = "PENDIENTE",
+                                                modifier = Modifier.padding(
+                                                    horizontal = 9.dp,
+                                                    vertical = 5.dp
+                                                ),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                                            )
+                                        }
                                     }
                                 }
 
