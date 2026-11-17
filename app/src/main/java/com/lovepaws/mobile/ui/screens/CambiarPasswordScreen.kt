@@ -38,6 +38,18 @@ fun CambiarPasswordScreen(
     var errorFormulario by remember { mutableStateOf<String?>(null) }
     var mostrarDialogoReingreso by remember { mutableStateOf(false) }
 
+    val coloresCampos = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
     LaunchedEffect(Unit) {
         perfilViewModel.limpiarEstado()
     }
@@ -79,6 +91,7 @@ fun CambiarPasswordScreen(
             value = passwordActual,
             onValueChange = { passwordActual = it },
             label = { Text("Contraseña actual") },
+            colors = coloresCampos,
             visualTransformation = if (mostrarPasswordActual) {
                 VisualTransformation.None
             } else {
@@ -106,6 +119,7 @@ fun CambiarPasswordScreen(
                 if (it.length <= 72) passwordNueva = it
             },
             label = { Text("Nueva contraseña") },
+            colors = coloresCampos,
             visualTransformation = if (mostrarPasswordNueva) {
                 VisualTransformation.None
             } else {
@@ -133,6 +147,7 @@ fun CambiarPasswordScreen(
                 if (it.length <= 72) confirmarPassword = it
             },
             label = { Text("Confirmar nueva contraseña") },
+            colors = coloresCampos,
             visualTransformation = if (mostrarConfirmacion) {
                 VisualTransformation.None
             } else {

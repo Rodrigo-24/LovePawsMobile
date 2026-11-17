@@ -74,10 +74,14 @@ fun DetalleMascotaScreen(
                 mascotaActual.idMascota != idMascota) -> {
 
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
 
@@ -86,12 +90,15 @@ fun DetalleMascotaScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-
-                Text(text = mensaje)
+                Text(
+                    text = mensaje,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
 
                 Button(onClick = onBack) {
                     Text("Volver al catálogo")
@@ -240,10 +247,14 @@ fun DetalleMascotaScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(fotoHeight)
-                                .align(Alignment.TopCenter),
+                                .align(Alignment.TopCenter)
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Sin fotografía")
+                            Text(
+                                text = "Sin fotografía",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
 

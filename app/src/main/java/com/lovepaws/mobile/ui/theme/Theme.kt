@@ -1,58 +1,98 @@
 package com.lovepaws.mobile.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val LovePawsLightColorScheme = lightColorScheme(
+    primary = LovePawsPrimary,
+    onPrimary = LovePawsSurface,
+    primaryContainer = LovePawsPrimaryContainer,
+    onPrimaryContainer = LovePawsPrimaryDark,
+
+    secondary = LovePawsSecondary,
+    onSecondary = LovePawsSurface,
+    secondaryContainer = LovePawsSecondaryContainer,
+    onSecondaryContainer = LovePawsSecondaryDark,
+
+    tertiary = LovePawsTertiary,
+    onTertiary = LovePawsSurface,
+    tertiaryContainer = LovePawsTertiaryContainer,
+    onTertiaryContainer = LovePawsTertiaryDark,
+
+    error = LovePawsError,
+    onError = LovePawsSurface,
+
+    background = LovePawsBackground,
+    onBackground = LovePawsOnBackground,
+
+    surface = LovePawsSurface,
+    onSurface = LovePawsOnSurface,
+    surfaceVariant = LovePawsSurfaceVariant,
+    onSurfaceVariant = LovePawsOnSurfaceVariant,
+
+    outline = LovePawsOutline,
+    outlineVariant = LovePawsOutlineVariant
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val LovePawsDarkColorScheme = darkColorScheme(
+    primary = LovePawsPrimaryContainer,
+    onPrimary = LovePawsPrimaryDark,
+    primaryContainer = LovePawsPrimary,
+    onPrimaryContainer = LovePawsPrimaryContainer,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = Color(0xFFB4C9B2),
+    onSecondary = LovePawsSecondaryDark,
+    secondaryContainer = Color(0xFF3B513D),
+    onSecondaryContainer = LovePawsSecondaryContainer,
+
+    tertiary = Color(0xFFE9C28D),
+    onTertiary = LovePawsTertiaryDark,
+    tertiaryContainer = Color(0xFF63451D),
+    onTertiaryContainer = LovePawsTertiaryContainer,
+
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+
+    background = LovePawsDarkBackground,
+    onBackground = LovePawsDarkOnSurface,
+
+    surface = LovePawsDarkSurface,
+    onSurface = LovePawsDarkOnSurface,
+    surfaceVariant = LovePawsDarkSurfaceVariant,
+    onSurfaceVariant = LovePawsDarkOnSurfaceVariant,
+
+    outline = LovePawsDarkOutline,
+    outlineVariant = LovePawsDarkOutlineVariant
+)
+
+private val LovePawsShapes = Shapes(
+    small = RoundedCornerShape(10.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(24.dp)
 )
 
 @Composable
 fun LovePawsMobileTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = if (darkTheme) {
+        LovePawsDarkColorScheme
+    } else {
+        LovePawsLightColorScheme
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = LovePawsShapes,
         content = content
     )
 }

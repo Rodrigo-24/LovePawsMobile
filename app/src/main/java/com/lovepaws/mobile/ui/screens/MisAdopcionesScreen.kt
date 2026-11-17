@@ -92,7 +92,9 @@ fun MisAdopcionesScreen(
 
                         if (cargando) {
 
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.primary
+                            )
 
                         } else {
 
@@ -230,7 +232,7 @@ private fun SolicitudAdopcionCard(
                     Text(
                         text = solicitud.tipoMascota,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -264,7 +266,7 @@ private fun SolicitudAdopcionCard(
                     Text(
                         text = "Fecha de solicitud",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Text(

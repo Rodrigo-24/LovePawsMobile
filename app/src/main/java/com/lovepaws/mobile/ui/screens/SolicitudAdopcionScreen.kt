@@ -239,6 +239,18 @@ private fun PreguntaSolicitudItem(
     onRespuestaChange: (String) -> Unit
 ) {
 
+    val coloresCampos = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(
@@ -278,6 +290,7 @@ private fun PreguntaSolicitudItem(
                         value = respuesta,
                         onValueChange = onRespuestaChange,
                         modifier = Modifier.fillMaxWidth(),
+                        colors = coloresCampos,
                         placeholder = {
                             Text("Escribe tu respuesta...")
                         },
@@ -325,6 +338,7 @@ private fun PreguntaSolicitudItem(
                     OutlinedTextField(
                         value = respuesta,
                         onValueChange = onRespuestaChange,
+                        colors = coloresCampos,
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
                             Text("Ingresa un número")
