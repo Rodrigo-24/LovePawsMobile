@@ -13,7 +13,7 @@ class AuthViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _mensaje = MutableStateFlow("Sin iniciar sesión")
+    private val _mensaje = MutableStateFlow("")
     val mensaje: StateFlow<String> = _mensaje.asStateFlow()
 
     private val _loginExitoso = MutableStateFlow(false)
@@ -38,12 +38,12 @@ class AuthViewModel(
     fun login(username: String, password: String) {
         _loginExitoso.value = false
         viewModelScope.launch {
-            _mensaje.value = "Iniciar sesión..."
+            _mensaje.value = ""
             try {
                 val response = authRepository.login(username, password)
 
                 if (response.isSuccessful) {
-                    _mensaje.value = "¡Inicio de sesión exitoso!"
+                    _mensaje.value = ""
                     _loginExitoso.value = true
                 } else {
                     _mensaje.value = "Error HTTP: ${response.code()}"
@@ -65,7 +65,7 @@ class AuthViewModel(
                 authRepository.cerrarSesion()
 
                 _loginExitoso.value = false
-                _mensaje.value = "Sin iniciar sesión"
+                _mensaje.value = ""
 
                 onSesionCerrada()
 
@@ -73,7 +73,7 @@ class AuthViewModel(
                 throw e
 
             } catch (e: Exception) {
-                _mensaje.value = "No se pudo cerrar sesión: ${e.message}"
+                _mensaje.value = ""
 
             } finally {
                 _cerrandoSesion.value = false

@@ -51,7 +51,9 @@ fun DetalleSolicitudScreen(
 
             when {
                 cargando -> {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
 
                 mensaje != null -> {
@@ -80,9 +82,20 @@ fun DetalleSolicitudScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
 
-                    Text("Tipo: ${datos.tipoMascota}")
-                    Text("Solicitud: #${datos.idSolicitud}")
-                    Text("Fecha: ${formatearFecha(datos.fechaSolicitud)}")
+                    Text(
+                        text = "Tipo: ${datos.tipoMascota}",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = "Solicitud: #${datos.idSolicitud}",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = "Fecha: ${formatearFecha(datos.fechaSolicitud)}",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -107,10 +120,14 @@ fun DetalleSolicitudScreen(
 
                             Text(
                                 text = respuesta.pregunta,
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
                             )
 
-                            Text(text = respuesta.respuesta)
+                            Text(
+                                text = respuesta.respuesta,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
 
                     if (datos.fechaResolucion != null ||
@@ -127,15 +144,18 @@ fun DetalleSolicitudScreen(
                         )
 
                         datos.fechaResolucion?.let {
-                            Text("Fecha: ${formatearFecha(it)}")
+                            Text("Fecha: ${formatearFecha(it)}",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
 
                         datos.nombreResponsable?.let {
-                            Text("Responsable: $it")
+                            Text("Responsable: $it",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
 
                         datos.observacionResolucion?.let {
-                            Text("Observación: $it")
+                            Text("Observación: $it",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

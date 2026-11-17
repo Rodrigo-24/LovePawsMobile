@@ -36,6 +36,18 @@ fun EditarCredencialesScreen(
     var errorFormulario by remember { mutableStateOf<String?>(null) }
     var mostrarDialogoReingreso by remember { mutableStateOf(false) }
 
+    val coloresCampos = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
     LaunchedEffect(Unit) {
         perfilViewModel.limpiarEstado()
         perfilViewModel.cargarPerfil()
@@ -81,7 +93,9 @@ fun EditarCredencialesScreen(
                 contentAlignment = Alignment.Center
             ) {
                 if (mensaje.isNullOrBlank()) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 } else {
                     Text(
                         text = mensaje!!,
@@ -98,7 +112,8 @@ fun EditarCredencialesScreen(
                 },
                 label = { Text("Usuario") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = coloresCampos
             )
 
             OutlinedTextField(
@@ -111,7 +126,8 @@ fun EditarCredencialesScreen(
                     keyboardType = KeyboardType.Email
                 ),
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = coloresCampos
             )
 
             OutlinedTextField(
@@ -133,7 +149,8 @@ fun EditarCredencialesScreen(
                     }
                 },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = coloresCampos
             )
 
             Button(
